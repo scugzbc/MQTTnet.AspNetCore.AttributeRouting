@@ -60,5 +60,5 @@ namespace Example
                 endpoints.MapMqtt("/mqtt");
             });
         }
-    }
+    } 
 }

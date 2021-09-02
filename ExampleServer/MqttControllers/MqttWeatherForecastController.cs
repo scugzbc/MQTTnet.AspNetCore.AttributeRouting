@@ -2,6 +2,7 @@
 using MQTTnet.AspNetCore.AttributeRouting;
 using System;
 using System.Threading.Tasks;
+using MQTTnet;
 
 namespace Example.MqttControllers
 {
@@ -28,13 +29,13 @@ namespace Example.MqttControllers
             var temperature = BitConverter.ToDouble(Message.Payload);
 
             _logger.LogInformation($"It's {temperature} degrees in Hollywood");
-
+           // Server.PublishAsync(new MqttApplicationMessage(){Topic = "bbb",ContentType = "text/css",})
+               // Message.
             // Example validation
             if (temperature <= 0 || temperature >= 130)
             {
                 return BadMessage();
-            }
-
+            } 
             return Ok();
         }
     }

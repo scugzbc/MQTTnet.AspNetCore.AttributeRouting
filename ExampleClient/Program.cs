@@ -2,6 +2,7 @@
 using MQTTnet.Client.Options;
 using MQTTnet.Extensions.ManagedClient;
 using System;
+using MQTTnet.Implementations;
 
 namespace ExampleClient
 {
@@ -15,13 +16,13 @@ namespace ExampleClient
                 .WithAutoReconnectDelay(TimeSpan.FromSeconds(5))
                 .WithClientOptions(new MqttClientOptionsBuilder()
                     .WithClientId($"Client{rnd.Next(0, 1000)}")
-                    .WithWebSocketServer("localhost:50482/mqtt")
+                    .WithWebSocketServer("localhost:5000/mqtt")
                     .Build())
                 .Build();
 
             var mqttClient = new MqttFactory().CreateManagedMqttClient();
             await mqttClient.SubscribeAsync(new MqttTopicFilterBuilder().WithTopic("MqttWeatherForecast/90210/temperature").Build());
-
+            
             mqttClient.UseConnectedHandler(e =>
             {
                 Console.WriteLine($"Connection Result: {e.AuthenticateResult.ResultCode}");
@@ -29,6 +30,7 @@ namespace ExampleClient
 
             mqttClient.UseApplicationMessageReceivedHandler(e =>
             {
+                 
                 Console.WriteLine($"Message from {e.ClientId}: {e.ApplicationMessage.Payload.Length} bytes.");
             });
 
@@ -37,7 +39,7 @@ namespace ExampleClient
             // Publish a message on a well known topic
             await mqttClient.PublishAsync(new ManagedMqttApplicationMessageBuilder().WithApplicationMessage(msg =>
              {
-                 msg.WithAtLeastOnceQoS();
+                 msg.WithExactlyOnceQoS();
                  msg.WithPayload(BitConverter.GetBytes(98.6d));
                  msg.WithTopic("MqttWeatherForecast/90210/temperature");
              }).Build());
